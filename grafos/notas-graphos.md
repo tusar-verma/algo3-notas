@@ -15,8 +15,9 @@
   - **Grafo complemento**: Es el grafo con el mismo conjunto de vertices pero solo tiene las aristas que NO estan en G.
   - **Grafo conexo**: si existe un camino para todo par de vertices
   - **Grafo fuertemente conexo**: (directed graphs) si existe un camino orientado entre todo par de vertices.
-  - **Grafos bipartitos**:
+  - **Grafos bipartitos**: es un grafo cuyos vértices se pueden separar en dos conjuntos disjuntos, de manera que las aristas no pueden relacionar vértices de un mismo conjunto.1
   ![Alt text](./img/grafos_bipartitos.png)
+  - **Grafos bipartitos completos**: es un grafo bipartito en que todos los vértices de uno de los subconjuntos están relacionados con los del otro subconjunto
     - ### teoremas
 
   - **subgrafos**:
@@ -52,6 +53,180 @@ siendo m la cantidad de aristas del grafo
 
 ***colorario*** : la cantidad de nodos con grado impar es par. Esto debido a que la suma de todas las conexiones da un numero impar. Si sumamos 2 pares da par, si sumamos 2 impares de par, por lo que para preservar la paridad tiene que haber una cantidad par de nodos con grado impar. 
 
+## DFS y BFS
+
+### DFS sin stack
+
+```c++
+vector<vector<int>> aristas = ... ;
+vector<bool> visitado(n, false);
+
+void dfs(int v) {
+  visitado[v] = true;
+
+  for (int u : aristas[v]) {
+    if (!visitado[u]) {
+      dfs(u)
+    }
+  }
+
+}
+```
+
+### DFS con stack
+```c++
+vector<vector<int>> aristas = ... ;
+vector<bool> visitado(n, false);
+
+void dfs(int v) {
+  stack<int> s;
+  s.push(v);
+  vistados[v] = true
+
+  while (!s.empty()) {
+    int v = s.top(); s.pop();
+
+    for (auto u: aristas[v]) {
+      if (!visitado[u]) {
+        visitado[u] = true;
+        s.push(u);
+      }
+    }
+    
+  }
+
+}
+
+```
+
+### BFS con cola
+
+
+```c++
+vector<vector<int>> aristas = ...;
+vector<bool> visitados(n, false);
+vector<int> distancia(n);
+
+void bfs(int s) {
+  visitados[s] = true
+  distancia[s] = 0
+
+  queue<int> q;
+  q.push(s);
+
+  while (!q.empty()) {
+    int v = q.front(); q.pop();
+
+    for (auto u : aristas[v]) {
+      if (!visitado[u]) {
+        visitado[u] = true;
+        distancia[u] = distancia[v] +1;
+        q.push(u);
+      }
+    }
+  }
+}
+```
+
+### Problemas que se resuelven con DFS y BFS
+
+1. **¿Es el grafo conexo?**: Recorro con DFS o BFS desde algún nodo (el 0 por ejemplo) y si el vector de visitados no tiene ningún falso, entonces sí es conexo. De lo contrario hay nodos que desde el que comenzamos no podemos llegar. 
+2. **¿Cuantas componentes conexas tengo?**: Cada vez que recorro el grafo desde un vertice, me marca como visitado los que pertenecen a su componente conexa. Luego me fijo cuales no fueron marcadas, recorro desde la primera no marcada para encotnrar todos los elementos de la otra componente conexa. Repito para obtener todas las componentes conexas.
+```c++
+int cant_comp_conexas = 0;
+for (int i = 0; i < n; i++>) { // n la cantidad de vertices del grafo 
+  if (!visitado[i]) {
+    cant_comp_conexas++;
+    recorro_desde_el_vertice(i); // con dfs o bfs
+  } 
+}
+```
+
+3. **¿Hay ciclos? Y si hay, guardame alguno**: Recorro el grafo y en cada paso guardo el padre del nodo actual. Recorro los vecinos del nodo actual v. Para cada vecino u, si no está recorrida le pongo el padre y la recorro, si está recorrida y no es el padre de v, entonces se hay un ciclo desde v hasta ese u    
+```c++
+vector<int> padres(n, -1);
+vector<int> ciclo;
+vector<vector<int>> aristas = ...;
+int comienzo_ciclo = -1, fin_ciclo = -1;
+queue<int> q;
+
+
+for (int i = 0; i < n && comienzo_ciclo == fin_ciclo == -1; i++) {
+  if (padre[i] == -1) {
+    dfs_ciclos(i);
+  }
+}
+
+if (comienzo_ciclo >= 0) {
+  int v = comienzo_ciclo;
+  ciclo.push_back(v);
+
+  while (v != fin_ciclo) {
+    v = padre[v];
+    ciclo.push_back(v);
+  }
+}
 
 
 
+void dfs_ciclos(int s) {
+  padre[s] = 0;
+  q.push(s);
+
+  while (!q.empty() && comnienzo_ciclo == fin_ciclo == -1) {
+    int v = q.top(); q.pop();
+
+    for (auto u : aristas[v]) {
+      if (padre[u] == -1) {
+        padre[u] = v;
+        q.push(u);
+      } else if (u != padre[v]) {
+        //si la arista no es la que apunta al padre de v, ciclo.
+        comienzo_ciclo = v;
+        fin_ciclo = u;
+        break;
+      }
+    }
+  }
+}
+```
+4. **¿Es un grafo bipartito?**: Recorro el grafo pintando de 2 colores, cuando me encuentro en el recorrido uno del mismo color que su padre, entonces no es bipartito
+```c++
+void dfs_bipartito(int v) {
+  for (int u : aristas[v]) {
+    if (color[u] == -1) { 
+      // si no esta pintado pinto
+      color[u] = 1 - color[v];
+      dfs(u);
+    } else if (color[u] == color[v]) { 
+      // si ya esta pintado chequeo
+      es_bipartito = false;
+    }
+  }
+}
+// llamada
+es_bipartito = true;
+color[0] = 0;
+dfs_bipartito(0);
+```
+5. **Cantidad de caminos desde w a v**: Luego de hacer BFS en w, tengo computadas todas las distancias desde w hacia cualquier nodo que tenga un camino con w. Luego para buscar la cantida de caminos, cuento la cantidad de caminos que hay desde los vecinos con distancia menor a v. Cuando la distancia es 0, estoy en el nodo w y hay un solo camino.
+```c++
+BFS(w)
+cantidad_de_caminos_hasta(v);
+
+int cantidad_de_caminos_hasta(v) {
+  if (distancia[v] == 0) return 1;
+  if (memo[v] != -1) return memo[v];
+  int res = 0;
+
+  for (int vecino : aristas[v]) {
+    if (distancia[vecino] + 1 == distancia[v]) {
+      res += cantidad_de_caminos_hasta(vecino);
+    }
+  }
+
+  memo[v] = res;
+  return res;
+}
+
+```
