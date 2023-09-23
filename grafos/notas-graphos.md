@@ -42,6 +42,7 @@
   - **circuito**: un recorrido que empieza y termina en el mismo nodo
   - **ciclo**: un circuito que no repite nodos (se puede decir ciclo al circuito y circuito simple al circuito)
   - No es valido un ciclo de longitud 2
+  - **puente**: es una arista que al quitarla aumenta la cantidad de componentes conexas del grafo
 
 - ### **Isomorfismo de grafos**:
   ![Alt text](./img/definicion_isomorfismo.png)
@@ -229,4 +230,95 @@ int cantidad_de_caminos_hasta(v) {
   return res;
 }
 
+```
+6. **Cantidad de puentes de un grafo**: Un puento es una arista que al quitarla aumenta la cantidad de componentes conexas del grafo<br>
+En el recorrido DFS puedo tener 3 estados para cada vertice: Empecé a recorrer, terminé de recorrer, no lo recorrí. Según estos estados podemos clasificar a las aristas según el arbol generado por el DFS.<br>
+Dado un momento del recorrido en un vertice V, vamos a ver todos sus vecinos. Si el vecino no lo recorrí, entonces la arista es un tree-edge (pertenece al arbol DFS). Si no, y si no es el padre, entonces es un back-edge (conecta con un ancestro) y no pertenece al arbol DFS. Una back-edge no es un puente <br>
+Una arista es un puente si es un tree-edge y no tiene una back-edge "que la cubra". La cantidad de back-edges que cubre a una arista v de su padre es <br><br>
+$\sum_{\text{w hijo de v}}{cubren(w)}$ $- backEdgesQueTerminanEn(v) + backEdgesQueEmpiezanEn(v)$ 
+<br><br>
+*backEdgesQueTerminanEn(v)*: aristas que no estan en el DFS que empiezan en algun decendiente de v y que terminan conectado en v.<br>
+*backEdgesQueEmpiezanEn(v)*: aristas que empiezan en v y van hacia algun ancestro de v.<br>
+
+```c++
+vector<int> memo(n, -1);
+int NO_LO_VI = 0, EMPECE_A_VER = 1, TERMINE_DE_VER = 2;
+vector<int> estado(n, NO_LO_VI);
+vector<vector<int>> tree_edges(n), backEdgesQueTerminanEn(n), backEdgesQueEmpiezanEn(n);
+
+void dfs_puentes(int v, int p = -1) {
+  estado[v] = EMPECE_A_VER;
+  for (int u : aristas[v]) {
+    if (estado[u] == NO_LO_VI) {
+      tree_edges[v].push_back(u);
+      dfs(u, v);
+    } else if (u != p) {
+      backEdgesQueEmpiezanEn[v]++;
+      backEdgesQueTerminanEn[u]++;
+    }
+  }
+  estado[v] = TERMINE_DE_VER;
+}
+
+int cubren(int v, int p = -1) {
+  if (memo[v] != -1) return memo[v];
+  int res = 0;
+
+  for (int hijo : tree_edges[v]) {
+    if (hijo != p) {
+      res += cubren(hijo, v);
+    }
+  }
+
+  res -= backEdgesQueTerminanEn[v];
+  res += backEdgesQueEmpiezanEn[v];
+  memo[v] = res;
+  return res;
+}
+
+int componentes = 0, cant_puetnes = 0;
+
+for (int i = 0; i < n; i++) {
+  if (estado[i] != NO_LO_VI) {
+    dfs_puentes(i);
+    componentes++;
+  }
+}
+for (int i = 0; i < n; i++) {
+  if (cubren[i] == 0){
+    cant_puentes++;
+  }
+}
+// Por cada componente conexa hay una raiz que no lo cubre nadie, pero no cuenta para aristas puente
+cant_puentes -= componentes
+
+```
+7. **Topological sort**: Dado un grafo acíclico dirigido G, es una ordenación lineal de todos los nodos de G que satisface que si G contiene la arista dirigida uv entonces el nodo u aparece antes del nodo v. En grafos con ciclos no hay orden topológico. (Se ordenan los nodos en orden de precedencia)
+```c++
+vector<lista<int>> aristas = ...;
+vector<bool> visitado(bool, false)
+vector<int> vertices_ordenados;
+stack<int> res;
+
+for (int i = 0; i < n; i++) {
+  if (!visitado[i]) {
+    dfs_topological_sort(i);
+  }
+}
+
+for(int i = 0; i < n; i++) {
+  vertices_ordenados.push_back(res.pop());
+}
+
+void dfs_topological_sort(int v) {
+  visitado[v] = true;
+
+  for (auto u : aristas[v]) {
+    if (!visitado[u]) {
+      dfs_topological_sort(u);
+    }
+  }
+  res.push(v);
+
+}
 ```
