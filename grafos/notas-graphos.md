@@ -3,50 +3,55 @@
 - Los **grafos** son un conjunto de vertices y ejes G = (V, E)
 - si no aclara no tiene dirección
 - No hay selfloops ni varios ejes para un mismo par de nodos (multigrafos)
-- ### Tipos de grafos
-  - **Digrafo**: grafo con ejes con dirección (a lo sumo puede tener 2 ejes por par de nodos, uno para la ida y otro para la vuelta)
-    - $d_{in}(v)$ : grado de entrada de un nodo
-    - $d_{out}(v)$ : grado de salida de un nodo
-    - las aristas E ahora son pares ordenados donde, sea e=(u, v), e se lo llama arco, u cola (desde donde viene) y v cabeza (hacia donde va)
-  - Dos grafos son isomorfismo si son iguales salvo por el nombre de los nodos (los rotas y quedan igual en distribución)
-  - **Grafos conectados**: (para grafos sin dirección), hay un camino entre cualquier par de nodos
-  - **Grafos fuertemente conectados**: (para grafos con dirección), hay una ruta entre cualquier par de nodos
-  - **Grafos completos**: (para grafos sin dirección), todos los nodos estan conectados con todos
-  - **Grafo complemento**: Es el grafo con el mismo conjunto de vertices pero solo tiene las aristas que NO estan en G.
-  - **Grafo conexo**: si existe un camino para todo par de vertices
-  - **Grafo fuertemente conexo**: (directed graphs) si existe un camino orientado entre todo par de vertices.
-  - **Grafos bipartitos**: es un grafo cuyos vértices se pueden separar en dos conjuntos disjuntos, de manera que las aristas no pueden relacionar vértices de un mismo conjunto.1
-  ![Alt text](./img/grafos_bipartitos.png)
-  - **Grafos bipartitos completos**: es un grafo bipartito en que todos los vértices de uno de los subconjuntos están relacionados con los del otro subconjunto
-    - ### teoremas
 
-  - **subgrafos**:
-  ![Alt text](./img/definiciones_subgrafos.png)
-  
-  - **Componente conexa**: es un subgrafo conexo maximal (no está incluído estrictamente en otro grafo).
-  ![Alt text](./img/ejemplo_componentes_conexas.png)
+### Tipos de grafos
 
-  - **Arboles**: 
-    - Grafo conectado y aciclico
-    - si saco una arista, se desconecta
-    - si agrego una arista se forma un ciclo
+- **Digrafo**: grafo con ejes con dirección (a lo sumo puede tener 2 ejes por par de nodos, uno para la ida y otro para la vuelta)
+  - $d_{in}(v)$ : grado de entrada de un nodo
+  - $d_{out}(v)$ : grado de salida de un nodo
+  - las aristas E ahora son pares ordenados donde, sea e=(u, v), e se lo llama arco, u cola (desde donde viene) y v cabeza (hacia donde va)
+- Dos grafos son isomorfismo si son iguales salvo por el nombre de los nodos (los rotas y quedan igual en distribución)
+- **Grafos conectados**: (para grafos sin dirección), hay un camino entre cualquier par de nodos
+- **Grafos fuertemente conectados**: (para grafos con dirección), hay una ruta entre cualquier par de nodos
+- **Grafos completos**: (para grafos sin dirección), todos los nodos estan conectados con todos
+- **Grafo complemento**: Es el grafo con el mismo conjunto de vertices pero solo tiene las aristas que NO estan en G.
+- **Grafo conexo**: si existe un camino para todo par de vertices
+- **Grafo fuertemente conexo**: (directed graphs) si existe un camino orientado entre todo par de vertices.
+- **Grafos bipartitos**: es un grafo cuyos vértices se pueden separar en dos conjuntos disjuntos, de manera que las aristas no pueden relacionar vértices de un mismo conjunto.1 <br>
 
-- ### caminos y recorridos    
-  - **Vecindario**: N(v) es el conjunto de nodos de G adyacentes a v
+![def graf bipartito](./img/grafos_bipartitos.png)
+- **Grafos bipartitos completos**: es un grafo bipartito en que todos los vértices de uno de los subconjuntos están relacionados con los del otro subconjunto
 
-  - **grado**: d(v) = |N(v)| es la cantidad de vecinos
-  - **recorrido**: una secuencia de nodos conectados por aristas (pueden repetir nodos)
-  - **longitud de un recorrido**: la cantidad de *aristas* que tiene
-  - **Distancia** entre 2 nodos: el camino mas corto d(u,v). Si no existe es $∞$. La distancia de un vertice con si mismo es 0.
-  - **camino**: un recorrido sin nodos repetidos (tambien se llama camino simple cuando se refiere al recorrido como camino)
-  - **circuito**: un recorrido que empieza y termina en el mismo nodo
-  - **ciclo**: un circuito que no repite nodos (se puede decir ciclo al circuito y circuito simple al circuito)
-  - No es valido un ciclo de longitud 2
-  - **puente**: es una arista que al quitarla aumenta la cantidad de componentes conexas del grafo
+- **subgrafos**:
 
-- ### **Isomorfismo de grafos**:
-  ![Alt text](./img/definicion_isomorfismo.png)
-  ![Alt text](./img/propiedades_isomorfismo.png)
+![](./img/definiciones_subgrafos.png){width=400px}
+
+- **Componente conexa**: es un subgrafo conexo maximal (no está incluído estrictamente en otro grafo).
+
+![](./img/ejemplo_componentes_conexas.png){width=400px}
+
+- **Arboles**: 
+  - Grafo conectado y aciclico
+  - si saco una arista, se desconecta
+  - si agrego una arista se forma un ciclo
+
+### caminos y recorridos    
+- **Vecindario**: N(v) es el conjunto de nodos de G adyacentes a v
+
+- **grado**: d(v) = |N(v)| es la cantidad de vecinos
+- **recorrido**: una secuencia de nodos conectados por aristas (pueden repetir nodos)
+- **longitud de un recorrido**: la cantidad de *aristas* que tiene
+- **Distancia** entre 2 nodos: el camino mas corto d(u,v). Si no existe es $∞$. La distancia de un vertice con si mismo es 0.
+- **camino**: un recorrido sin nodos repetidos (tambien se llama camino simple cuando se refiere al recorrido como camino)
+- **circuito**: un recorrido que empieza y termina en el mismo nodo
+- **ciclo**: un circuito que no repite nodos (se puede decir ciclo al circuito y circuito simple al circuito)
+- No es valido un ciclo de longitud 2
+- **puente**: es una arista que al quitarla aumenta la cantidad de componentes conexas del grafo
+
+### **Isomorfismo de grafos**:
+![imagen definicion isomorfismo](./img/definicion_isomorfismo.png){width=50%}
+![imagen prop isomorfismo](./img/propiedades_isomorfismo.png){width=50%}
+
 ## Teorema 1: suma de grados
 $\sum _{v \in V}{d(v)}$ = $2m$
 
@@ -347,12 +352,12 @@ G - e = (V, E \ {e}) es conexo $\iff$ e $\in$ C : circuito simple de G. <br>
 - **Colorario 1**: Sea G un *bosque* con c c.c. $⇒$ m = n - c
 - **Colorario 2**: Sea G un *grafo* con c c.c. $⇒$ m $≥$ n - c
 
-### Mas equivalencias
+### Mas equivalencias (teorema 2?)
 1. G es un árbol (grafo conexo sin circuitos simples).
 2. G es un grafo sin circuitos simples y m = n - 1
 3. G es un grafo conexo y m = n - 1
 
-## Arbol generador
+## Árbol generador
 **Un árbol generador** (AG) de un grafo G es un subgrafo que tiene
 el mismo conjunto de vértices y es un árbol
 
@@ -360,3 +365,47 @@ Teorema 4:
 1. Todo G conexo tiene al menos un AG.
 2. Si G conexo tiene un sólo AG entonces es un árbol.
 3. T=(V, $E_{T}$) es AG de G=(V, E). Sea e=E\ $E_{T}$ (no está en el árbol) tq T’ = T+e-f = (V, E $∪$ {e}\ {f}) con f una arista del único circuito que se forma al agregar e (de T+e ) $⇒$ T’ es otro AG de G.
+
+## Árbol generador mínimo
+Dado un grafo G=(V, E, w) con $w: E ⟶ R$ una función de costo para cada arista
+- Costo del AGM T: $w(T) = ∑_{e ∈ E(T)} w(e)$ (la suma de los costos de las aristas del AGM)
+- AGM es el AG para el cual $∑_{T}w$ es mínima.
+- Para los grafos no pesados todo AG es AGM porque w=1 $⇒ ∑_{T}w=m=n-1$
+- También puede haber varios AGM. Prim y Kruskal son 2 algoritmos para obtener AGMs
+
+### Prim
+- consiste en ir agarrando la arista con menor costo que conecte a un vertice que todavia no pertence a el arbol generado hasta el momento, hasta conectar todos los vertices. (Algoritmo goloso)
+```c++
+void prim(int raiz, vector<lista<int>> ady) {
+  vector<int> costo_vertices(n, inf);
+  vector<int> padres_vertices(n, -1);
+  // los vertices se numeran de 1..n
+  padres_vertices[raiz] = 0;
+  costo_vertices[raiz] = 0;
+
+  // encolo todos los elementos en un min heap, cada elemento es un par <costo, elemento>
+  min_heap<pair<int, int>> Q;
+  for (int i = 1; i <= n; i++) {
+    Q.insert(pair<int, int>(inf, i));
+  }
+
+  while (!Q.empty()) {
+    int w = Q.getMin(); Q.extractMin();
+    for (auto v : ady[w]) {
+      // cuando agrego una arista al arbol generado en la iteración actual, éste puede tener aristas hacia algún nodo que ya estaba en el arbol pero con un costo menor.
+      /* A--2--B    
+         |   /
+         4  1
+         | /
+         C
+        Si empezamos en A, agregamos las aristas A-B y A-C. Luego en el tope de la cola queda B y vemos que tiene una arista B-C que tiene un coste menor que lo computado hasta ahora (4 > 1), por lo que lo actualizamos y obtenemos el AGM con costo 3
+      */
+      if (costo_vertice(v) > costo(arista(w,v))) {
+        costo_vertice[v] = costo(arista(w,v));
+        padres_vertices[v] = w;
+        Q.decreaseKey(pair<int,int>(costo_vertice[v], v));
+      }
+    }
+  }
+}
+```
