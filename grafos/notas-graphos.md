@@ -37,7 +37,7 @@
   - **grado**: d(v) = |N(v)| es la cantidad de vecinos
   - **recorrido**: una secuencia de nodos conectados por aristas (pueden repetir nodos)
   - **longitud de un recorrido**: la cantidad de *aristas* que tiene
-  - **Distancia** entre 2 nodos: el camino mas corto d(u,v). Si no existe es $\infin$. La distancia de un vertice con si mismo es 0.
+  - **Distancia** entre 2 nodos: el camino mas corto d(u,v). Si no existe es $∞$. La distancia de un vertice con si mismo es 0.
   - **camino**: un recorrido sin nodos repetidos (tambien se llama camino simple cuando se refiere al recorrido como camino)
   - **circuito**: un recorrido que empieza y termina en el mismo nodo
   - **ciclo**: un circuito que no repite nodos (se puede decir ciclo al circuito y circuito simple al circuito)
@@ -322,3 +322,41 @@ void dfs_topological_sort(int v) {
 
 }
 ```
+## Arboles
+### Definiciones
+- **Árbol**: T (grafo conexo sin circuitos simples)
+- **Hoja**: u \ d(u) = 1 (un vertice con grado 1)
+- **Raíz**: Algún vértice elegido
+- **Bosque**: Conjunto de árboles (componentes conexas)
+- **Árbol trivial**: T con n=1 y m=0
+
+### Equivalencias (cada una implica la otra)
+1. G es un árbol (grafo conexo sin circuitos simples).
+2. G es un grafo sin circuitos simples y e una arista tq e $\notin$ E. G+e = (V, E+{e}) tiene exactamente un circuito simple, y ese circuito contiene a e. Es decir, si agrego una arista cualquiera se forma un ciclo.
+3. $\exists$ exactamente un camino simple entre todo par de nodos. 
+4. G es conexo, pero si se quita cualquier arista queda un grafo no conexo. Es decir, si saco cualquier arista se desconecta, o toda arista es puente
+
+### Propiedades
+- **Lema 1**: La unión entre dos caminos simples distintos entre u y v contiene
+un circuito simple.
+- **Lema 2**: Sea G = (V, E) un grafo conexo y e=(v,u) $\in$ E. <br>
+G - e = (V, E \ {e}) es conexo $\iff$ e $\in$ C : circuito simple de G. <br>
+( e=(v,u) $\in$ E es puente $\iff$ e no pertenece a un circuito simple de G ). 
+- **Lema 3**: Todo árbol no trivial tiene al menos dos hojas.
+- **Lema 4**: Sea G = (V, E) un árbol $⇒$ m = n - 1 (m = |E| n = |V|) (dem: inducción en n, sacas una hoja y la volves a poner)
+- **Colorario 1**: Sea G un *bosque* con c c.c. $⇒$ m = n - c
+- **Colorario 2**: Sea G un *grafo* con c c.c. $⇒$ m $≥$ n - c
+
+### Mas equivalencias
+1. G es un árbol (grafo conexo sin circuitos simples).
+2. G es un grafo sin circuitos simples y m = n - 1
+3. G es un grafo conexo y m = n - 1
+
+## Arbol generador
+**Un árbol generador** (AG) de un grafo G es un subgrafo que tiene
+el mismo conjunto de vértices y es un árbol
+
+Teorema 4:
+1. Todo G conexo tiene al menos un AG.
+2. Si G conexo tiene un sólo AG entonces es un árbol.
+3. T=(V, $E_{T}$) es AG de G=(V, E). Sea e=E\ $E_{T}$ (no está en el árbol) tq T’ = T+e-f = (V, E $∪$ {e}\ {f}) con f una arista del único circuito que se forma al agregar e (de T+e ) $⇒$ T’ es otro AG de G.
