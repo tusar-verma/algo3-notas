@@ -294,7 +294,8 @@ for (int i = 0; i < n; i++) {
     cant_puentes++;
   }
 }
-// Por cada componente conexa hay una raiz que no lo cubre nadie, pero no cuenta para aristas puente
+// Por cada componente conexa hay una raiz que no lo cubre nadie,
+// pero no cuenta para aristas puente
 cant_puentes -= componentes
 
 ```
@@ -362,8 +363,8 @@ G - e = (V, E \ {e}) es conexo $\iff$ e $\in$ C : circuito simple de G. <br>
 el mismo conjunto de vértices y es un árbol
 
 Teorema 4:
-1. Todo G conexo tiene al menos un AG.
-2. Si G conexo tiene un sólo AG entonces es un árbol.
+1. Todo G conexo tiene al menos un AG.<br>
+2. Si G conexo tiene un sólo AG entonces es un árbol.<br>
 3. T=(V, $E_{T}$) es AG de G=(V, E). Sea e=E\ $E_{T}$ (no está en el árbol) tq T’ = T+e-f = (V, E $∪$ {e}\ {f}) con f una arista del único circuito que se forma al agregar e (de T+e ) $⇒$ T’ es otro AG de G.
 
 ## Árbol generador mínimo
@@ -374,38 +375,132 @@ Dado un grafo G=(V, E, w) con $w: E ⟶ R$ una función de costo para cada arist
 - También puede haber varios AGM. Prim y Kruskal son 2 algoritmos para obtener AGMs
 
 ### Prim
-- consiste en ir agarrando la arista con menor costo que conecte a un vertice que todavia no pertence a el arbol generado hasta el momento, hasta conectar todos los vertices. (Algoritmo goloso)
+- *Invariante*: tenemos un árbol de i aristas que es subgrafo de
+algún AGM.<br>
+*Inicialización*: empezamos con un solo vértice v arbitrario. <br>
+*Iteración*: agregamos, de las aristas que podemos agregar y
+seguir teniendo un arbol, la mas barata (Algoritmo goloso)
+
+- **complejidad**: Hay implementaciones en $O(m*log(n)) y O(n²)$
 ```c++
-void prim(int raiz, vector<lista<int>> ady) {
+vector<int> prim(int raiz, vector<lista<int>> ady) {
   vector<int> costo_vertices(n, inf);
   vector<int> padres_vertices(n, -1);
+  vector<bool> elementos_en_cola(n, true);
   // los vertices se numeran de 1..n
   padres_vertices[raiz] = 0;
   costo_vertices[raiz] = 0;
 
-  // encolo todos los elementos en un min heap, cada elemento es un par <costo, elemento>
-  min_heap<pair<int, int>> Q;
+  // encolo todos los elementos en un min heap,
+  // cada elemento es un par <costo, elemento>
+  min_heap<pair<int, int>> Q; // el algoritmo de heapify es lineal, O(V)
   for (int i = 1; i <= n; i++) {
     Q.insert(pair<int, int>(inf, i));
   }
-
-  while (!Q.empty()) {
+  // O(V*log(V) + E*log(V)) por cada vertice, desencolo una vez, +, por cada arista 
+  // (en el peor caso) hago un cambio en la cola de prioridad
+  while (!Q.empty()) { 
     int w = Q.getMin(); Q.extractMin();
+    elementos_en_cola[w] = false;
+
     for (auto v : ady[w]) {
-      // cuando agrego una arista al arbol generado en la iteración actual, éste puede tener aristas hacia algún nodo que ya estaba en el arbol pero con un costo menor.
-      /* A--2--B    
+      /* cuando agrego una arista al arbol generado en la iteración actual, 
+       éste puede tener aristas hacia algún nodo que ya estaba en el arbol 
+       pero con un costo menor.
+       A--2--B    
          |   /
          4  1
          | /
          C
-        Si empezamos en A, agregamos las aristas A-B y A-C. Luego en el tope de la cola queda B y vemos que tiene una arista B-C que tiene un coste menor que lo computado hasta ahora (4 > 1), por lo que lo actualizamos y obtenemos el AGM con costo 3
+        Si empezamos en A, agregamos las aristas A-B y A-C. Luego en el tope de la cola
+        queda B y vemos que tiene una arista B-C que tiene un coste menor que lo 
+        computado hasta ahora (4 > 1), por lo que lo actualizamos y obtenemos el AGM con costo 3
       */
-      if (costo_vertice(v) > costo(arista(w,v))) {
+      if (elementos_en_cola[v] && costo_vertice(v) > costo(arista(w,v))) {
         costo_vertice[v] = costo(arista(w,v));
         padres_vertices[v] = w;
         Q.decreaseKey(pair<int,int>(costo_vertice[v], v));
       }
     }
   }
+  return padres_vertices;
 }
 ```
+- **complejidad**: $O(V + V*log(V) + E*log(V)) = O(E*log(V)) = O(m*log(n))$. Si el grafo tiene una cantidad mayor o igual de aristas que de vertices y usando binary heap y lista de adyacencias. <br>
+Se puede mejorar con fibonacci heap a $O(m + n*log(n))$. 
+- **Implementación $O(n²)$**: consiste en hacer n veces buscar la arista (de las que todavia no se agregaron) con minimo costo a agregar. (la cátedra dió una implementación)
+
+### Kruskal 
+- Consiste en ordenar todas las aristas de menor a mayor según la función de w (peso o costo). Luego, inicialmente, todos los elementos forman su propia componente conexa y voy uniendolos recorriendo en orden de menor a mayor costo las aristas del grafo. Las agrego al bosque si no generan un ciclo, es decir si sus extremos no pertenecen a la misma cc.
+  - *Invariante*: tenemos un bosque generador de i aristas que es
+  subgrafo de alg´un AGM.
+  - *Invariante alternativo*: tenemos un bosque generador de i
+aristas que es mpiınimo entre los bosques de i aristas.
+  - *Obs*: El primer invariante no implica al invariante
+  alternativo. Pensar un ejemplo.
+  - *Inicialización*: empezamos con todos los v´ertices y ninguna
+  arista.
+  - *Iteración*: agregamos, de las aristas que podemos agregar y
+  seguir teniendo un bosque (no generan ciclos), la m´as barata
+- **complejidad**: Hay implementaciones en $O(m*log(n))$ y $O(n²)$. La siguiente es $O(m*log(n))$
+```c++
+struct DSU {
+    DSU(int n){
+        padre = vector<int>(n);
+        for(int v = 0; v < n; v++) padre[v] = v;
+        tamano = vector<int>(n,1);
+    }
+    // dado un vértice me devuelve a qué componente conexa pertenece
+    int find(int v){
+        while(padre[v] != v) v = padre[v];
+        return v;
+    }
+    // une las componentes conexas de u y v
+    void unite(int u, int v){
+        u = find(u); v = find(v);
+        if(tamano[u] < tamano[v]) swap(u,v);
+        //ahora u es al menos tan grande como v
+        padre[v] = u;
+        tamano[u] += tamano[v];
+    }
+ 
+    vector<int> padre;
+    vector<int> tamano;
+ 
+    //tamano[v] <= n
+    //INV: si padre[v] != v entonces tamano[padre[v]] >= 2*tamano[v]
+};
+ 
+void kruskal(vector<tuple<int,int,int>>& E, int n){
+    long long res = 0;
+    sort(E.begin(),E.end());
+    DSU dsu(n);
+ 
+    int aristas = 0;
+    for(auto [w,u,v] : E){
+        //u y v estan en distinta cc?
+        if(dsu.find(u) != dsu.find(v)){
+            dsu.unite(u,v);
+            res += w;
+            aristas++;
+        }
+        if(aristas == n-1) break;
+    }
+    
+    if(aristas == n-1) cout<<res<<'\n';
+    else cout<<"IMPOSSIBLE\n";
+}
+ 
+int main(){
+    int n,m;
+    cin>>n>>m;
+    vector<tuple<int,int,int>> E(m); //(costo,u,v)
+    // lleno la lista de aristas y llamo a kruskal    
+    kruskal(E,n);
+    
+    return 0;
+}
+
+```
+## Para el parcial
+- Según si el grafo es denso o raro conviene usar Prim o Kruskal. Aún así para los parciales pueden asumir que tienen un algoritmo mágico que resuelve AGM en $O(min( m*log(n), n²))$. También existen versiones de Prim y Kruskal para grafos ralos/densos
