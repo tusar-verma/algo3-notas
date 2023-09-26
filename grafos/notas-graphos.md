@@ -256,7 +256,7 @@ void dfs_puentes(int v, int p = -1) {
   for (int u : aristas[v]) {
     if (estado[u] == NO_LO_VI) {
       tree_edges[v].push_back(u);
-      dfs(u, v);
+      dfs_puentes(u, v);
     } else if (u != p) {
       backEdgesQueEmpiezanEn[v]++;
       backEdgesQueTerminanEn[u]++;
@@ -290,7 +290,7 @@ for (int i = 0; i < n; i++) {
   }
 }
 for (int i = 0; i < n; i++) {
-  if (cubren[i] == 0){
+  if (cubren(i) == 0){
     cant_puentes++;
   }
 }
