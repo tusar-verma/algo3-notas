@@ -612,3 +612,27 @@ void find_bridges() {
     }
 }
 ```
+
+## Propiedades útiles sacadas de las guias 2 y 3
+### Guia 2
+- **Ej 5**: Sean P y Q dos caminos distintos de un grafo G que unen un vértice v con otro w, G tiene un ciclo cuyas aristas pertenecen a P o Q.
+
+- **Ej 6**: G un grafo conexo, todo par de caminos simples de longitud máxima de G tiene un vertice en común
+
+- **Ej 10**: Sea G un grafo de n vértices. G − v es bipartito para todo v $∈$ V (G) si y solo si G es bipartito o un ciclo impar
+
+- **Ej 14**:<br> 
+Si todos los vértices de un digrafo D tienen
+grado de salida mayor a 0, entonces D tiene un ciclo. <br>
+Un digrafo D es acíclico si y solo si D es trivial o D tiene un vértice con $d_{out}(v) = 0$ tal que D \ {v} es acíclico
+
+- **Ej 15**: $O(\sum_{v\in V(G)} d(v)) = O(m)$. Todo grafo tiene $O(\sqrt{m})$ vértices con grado al menos $\sqrt{m}$.
+
+### Guia 3
+- **Ej 2**: Una arista de un grafo G es puente si su remoción aumenta la cantidad de componentes conexas. Sea T un árbol DFS de un grafo conexo G, vw es un puente de G si y solo si vw no pertenece a ningún ciclo de G. <br>
+Si vw $∈$ E(G) \ E(T), entonces v es un ancestro de w en T o viceversa <br>
+Sea vw $∈$ E(G) una arista tal que el nivel de v en T es menor o igual al nivel de w en T, vw es puente si y solo si v es el padre de w en T y ninguna arista de G\ {vw} une a un descendiente de w (o a w) con un ancestro de v (o con v).
+
+- **Ej 5**: Un árbol generador T de un grafo G es v-geodésico si la distancia entre v y w en T es igual a la distancia entre v y w en G para todo w $∈$ V (G). Todo árbol BFS de G enraizado en v es v-geodésico. La vuelta no vale, no todo árbol generador v-geodésico de un grafo G pueda ser generado con BFS sobre G desde v.
+
+- **Ej 13**: Sea G un digrafo, si los pesos de G son todos distintos, entonces G tiene un único árbol generador mínimo.
