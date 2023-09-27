@@ -11,11 +11,9 @@
   - $d_{out}(v)$ : grado de salida de un nodo
   - las aristas E ahora son pares ordenados donde, sea e=(u, v), e se lo llama arco, u cola (desde donde viene) y v cabeza (hacia donde va)
 - Dos grafos son isomorfismo si son iguales salvo por el nombre de los nodos (los rotas y quedan igual en distribución)
-- **Grafos conectados**: (para grafos sin dirección), hay un camino entre cualquier par de nodos
-- **Grafos fuertemente conectados**: (para grafos con dirección), hay una ruta entre cualquier par de nodos
 - **Grafos completos**: (para grafos sin dirección), todos los nodos estan conectados con todos
 - **Grafo complemento**: Es el grafo con el mismo conjunto de vertices pero solo tiene las aristas que NO estan en G.
-- **Grafo conexo**: si existe un camino para todo par de vertices
+- **Grafo conexo**: (para grafos sin dirección) si existe un camino para todo par de vertices
 - **Grafo fuertemente conexo**: (directed graphs) si existe un camino orientado entre todo par de vertices.
 - **Grafos bipartitos**: es un grafo cuyos vértices se pueden separar en dos conjuntos disjuntos, de manera que las aristas no pueden relacionar vértices de un mismo conjunto.1 <br>
 
@@ -245,6 +243,7 @@ $\sum_{\text{w hijo de v}}{cubren(w)}$ $- backEdgesQueTerminanEn(v) + backEdgesQ
 *backEdgesQueTerminanEn(v)*: aristas que no estan en el DFS que empiezan en algun decendiente de v y que terminan conectado en v.<br>
 *backEdgesQueEmpiezanEn(v)*: aristas que empiezan en v y van hacia algun ancestro de v.<br>
 
+- **Complejidad**: $O(n + m)$
 ```c++
 vector<int> memo(n, -1);
 int NO_LO_VI = 0, EMPECE_A_VER = 1, TERMINE_DE_VER = 2;
@@ -504,3 +503,112 @@ int main(){
 ```
 ## Para el parcial
 - Según si el grafo es denso o raro conviene usar Prim o Kruskal. Aún así para los parciales pueden asumir que tienen un algoritmo mágico que resuelve AGM en $O(min( m*log(n), n²))$. También existen versiones de Prim y Kruskal para grafos ralos/densos
+
+## Algoritmo de tarjan para puntos de articulación (o puentes)
+
+Dado un grafo G = (V, E), un **punto de articulación** "v", es un vertice que tal que si lo removemos junto con sus aristas conectadas a él, el grafo se desconecta.
+
+- Solución por fuerza bruta: ir sacando de a un vertice (y luego volver a ponerlo) y comprobar con DFS o BSF si el grafo siendo conexo. Costo $O(n * (n + m))$ 
+
+### Algoritmo de tarjan para puntos de articulación
+
+Se basa en DFS por lo que tiene costo $O(n+m)$. El algoritmo usa 4 arreglos: 
+  - **visitado**: para tener un seguimiento de los vertices visitados
+  - **momento_descubrimiento**: momento en el DFS llegó por primera vez al vertice (se tiene una variable global *tiempo* que por cada vertice visitado se incrementa en 1 y empieza en 0)
+  - **mínimo_descubrimiento_alcanzable**: guarda para cada vertice, el mínimo tiempo de descubrimiento que se puede alcanzar desde el subarbol enraizado desde el vertice (tanto por tree edges como por backedges).
+  - **padre**: para guardar cual es el padre de cada vertice en el recorrido. La raiz tiene padre "-1"
+
+Se inicializan los 3 con largo igual a n y todos en -1. Se empieza el DFS desde un vertice cualquiera y por cada vertice "u" alcanzado:
+
+* Se marca *u* como visitado, se setea su momento de descubrimiento y se aumenta la variable tiempo.
+* Por cada vecino *v* de *u*:
+  1. si *v* no está visitado, setear el padre de *v* como *u* y expandir el dfs hacia *v*. Cuando vuelva de la recursión de *v*, setear el minimo_momento_visita de *u* como el min(minimo_momento_visita[u], minimo_momento_visita[v])
+  2. Si *u* no es la raiz y mínimo_descubrimiento_alcanzable[v] >= momento_descubrimiento[u] siginifica que desde el subarbol de v no hay ninguna arista que conecte con un ancestro de u (es decir, que tenga un momento de descubrimiento menor a u). Y por lo tanto *u* es un punto de articulación.
+  3. Si *u* era la raiz y tiene al menos 2 hijos, entonces es un punto de articulación. 
+ 
+ ```python
+from collections import defaultdict
+
+class Graph:
+    def __init__(self, vertices):
+        self.V = vertices
+        self.graph = defaultdict(list)
+
+    def add_edge(self, u, v):
+        self.graph[u].append(v)
+        self.graph[v].append(u)
+
+    def dfs(self, u, visited, discovery_time, low, parent, time, articulation_points):
+        visited[u] = True
+        discovery_time[u] = time
+        low[u] = time # mínimo_descubrimiento_alcanzable
+        children = 0
+
+        for v in self.graph[u]:
+            if not visited[v]:
+                parent[v] = u
+                children += 1
+                self.dfs(v, visited, discovery_time, low, parent, time + 1, articulation_points)
+
+                low[u] = min(low[u], low[v])
+
+                if parent[u] == -1 and children > 1:
+                    articulation_points.add(u)
+                elif parent[u] != -1 and low[v] >= discovery_time[u]:
+                    articulation_points.add(u)
+            elif v != parent[u]:
+                low[u] = min(low[u], discovery_time[v])
+
+    def find_articulation_points(self):
+        visited = [False] * self.V
+        discovery_time = [-1] * self.V
+        low = [-1] * self.V
+        parent = [-1] * self.V
+        time = 0
+        articulation_points = set()
+
+        for u in range(self.V):
+            if not visited[u]:
+                self.dfs(u, visited, discovery_time, low, parent, time, articulation_points)
+
+        return list(articulation_points)
+ ```
+### Algoritmo de tarjan para puentes
+
+Es una idea similar a la anterior, dado un vertice *v* en el recorrido DFS, por cada vecino *u* nos fijamos que no haya una backedge en el subarbol de *u* que vaya a un ancestro de *v*. O lo que sería que si el subarbol *u* tiene un minimo_descubrimiento_alcanzable más grande que el momento de descubrimiento de *v* entonces la arista $(v,u)$ es un puente. 
+- Complejidad: $O(n +m)$
+```c++
+int n; // number of nodes
+vector<vector<int>> adj; // adjacency list of graph
+vector<bool> visited;
+vector<int> tin, low; // momento_descubrimiento, mínimo_descubrimiento_alcanzable 
+int timer;
+
+// p: padre (parent)
+void dfs(int v, int p = -1) {
+    visited[v] = true;
+    tin[v] = low[v] = timer++;
+    for (int to : adj[v]) {
+        if (to == p) continue;
+        if (visited[to]) {
+            low[v] = min(low[v], tin[to]);
+        } else {
+            dfs(to, v);
+            low[v] = min(low[v], low[to]);
+            if (low[to] > tin[v])
+                IS_BRIDGE(v, to);
+        }
+    }
+}
+
+void find_bridges() {
+    timer = 0;
+    visited.assign(n, false);
+    tin.assign(n, -1);
+    low.assign(n, -1);
+    for (int i = 0; i < n; ++i) {
+        if (!visited[i])
+            dfs(i);
+    }
+}
+```
