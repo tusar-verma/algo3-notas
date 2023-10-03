@@ -636,3 +636,28 @@ Sea vw $∈$ E(G) una arista tal que el nivel de v en T es menor o igual al nive
 - **Ej 5**: Un árbol generador T de un grafo G es v-geodésico si la distancia entre v y w en T es igual a la distancia entre v y w en G para todo w $∈$ V (G). Todo árbol BFS de G enraizado en v es v-geodésico. La vuelta no vale, no todo árbol generador v-geodésico de un grafo G pueda ser generado con BFS sobre G desde v.
 
 - **Ej 13**: Sea G un digrafo, si los pesos de G son todos distintos, entonces G tiene un único árbol generador mínimo.
+
+## Camino mínimo para grafos con peso y dirección
+Dado un grafo $G = (V, E)$ y su función de pesos $w : E →  ℝ$, el **peso de un camino** $w(p)$ para $p = ( v_{0}, ..., v_{k} )$ es la suma de los pesos de cada arista: $\sum_{i=1}^{k} w(v_{i-1}, v_{i})$. $\\$
+Definimos el camíno más corto de $v$ a $u$ como
+
+$δ(u, v) = min\{w(p): u →^{p} v\}$ si existe un camino de u a v $\\$
+$δ(u, v) = ∞$ en caso contrario
+
+Además si el grafo tiene ciclos negativos (por tener aristas con costo negativo) tal que un camino de $v$ a $u$ contiene un ciclo negativo, entonces el camino más corto de $v$ a $u$ no se puede definir y decimos que tiene costo $-∞$.
+
+También podemos decir que el camino más corto entre $u$ y $v$ no tiene ciclos de costo positivo (o 0), porque si los tuviera los podríamos sacar y obtendriamos un camino con un costo menor o igual.
+Vamos a asumir que cuando se dice caminos más cortos son caminos simples (sin ciclos).
+
+### Lema 22.1 (cormen)
+Dado un grafo G dirigido y con peso, los subcaminos de un camino mínimo entre un vertice $v$ y $u$ también son caminos mínimos.
+
+## Algoritmos de camino minimo para grafos con peso y dirección
+Los algoritmos producen tanto el minimo costo para llegar desde un vertice $s$ a cualquier vertice alcanzable $v ∈ V$ cómo el camino en sí. Y como no tiene ciclos, es un arbol. Se lo llama *arbol de camino mínimo*.$\\$
+Cada vertice guarda a su predecesor $v.π$ y un estimado del costo del camino mínimo $v.d$. Todos los algoritmos inicializan a $s.d=0, s.π = NIL$,  $v.π = NIL, v.d = ∞$ para todo $v ∈ V - \{s\}. \\$
+Luego iterativamente se va recorriendo las aristas "*relajandolas*", esto es chequear para una arista $vu$ si 
+$v.d > v.u + w(u,v)$. Si esto se cumple el camino de $s$ a $u$ y la arista $uv$ es más corto que el camino más corto de $s$ a $v$ computado hasta ahora. Se actualiza $v.d$ y $v.π \\$
+Una vez terminado, cada vertice del arbol tiene el mínimo costo y si se va iterando por los predecesores, se puede obtener.
+
+### Propiedades del camino más corto y relajación
+![](img/prop-shortpath-relax.png){width=70%}
