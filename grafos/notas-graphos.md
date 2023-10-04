@@ -661,3 +661,31 @@ Una vez terminado, cada vertice del arbol tiene el mínimo costo y si se va iter
 
 ### Propiedades del camino más corto y relajación
 ![](img/prop-shortpath-relax.png){width=70%}
+
+
+### Algoritmo de Bellman-Ford
+- **Costo**: $O(V^2+VE)$
+- Dado un grafo $G$ dirigido y con peso, y una arista fuente "s", sí $G$ no tiene ciclos negativos el algoritmo devuelve TRUE y un arbol de costo mínimo tal que cada vertice alcanzable desde "s" guarda su padre y el costo mínimo de llegar a él desde "s". Si hay un ciclo negativo, devuelve FALSE. 
+
+```python
+BELLMAN-FORD(G, w, s)
+  INITIALIZE-SINGLE-SOURCE(G, s)
+  for i = 1 to |G.V| - 1
+    for each edge (u, v) ∈ G.E
+      RELAX(u, v, w)
+  for each edge (u, v) ∈ G.E
+    if v.d > u.d + w(u, v)
+      return FALSE
+  return TRUE
+
+RELAX(u, v, w)
+  if v.d > u.d + w(u, v):
+    v.d = u.d + w(u, v)
+    v.π = u
+
+INITIALIZE-SINGLE-SOURCE(G, s)
+  for each vertex v ∈ G.V
+    v.d = ∞
+    d.π = NIL
+  s.d = 0
+```

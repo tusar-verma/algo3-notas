@@ -1,0 +1,1 @@
+pandoc .\notas-graphos.md -o notas.pdf --pdf-engine=xelatex --variable "geometry=margin=0.7in"  -V "monofont:DejaVu Sans Mono"
