@@ -663,8 +663,8 @@ Una vez terminado, cada vertice del arbol tiene el mínimo costo y si se va iter
 ![](img/prop-shortpath-relax.png){width=70%}
 
 
-### Algoritmo de Bellman-Ford
-- **Costo**: $O(V^2+VE)$
+### Algoritmo de Bellman-Ford, Single-Source (con ciclos)
+- **Complejidad**: $O(V^2+VE)$
 - Dado un grafo $G$ dirigido y con peso, y una arista fuente "s", sí $G$ no tiene ciclos negativos el algoritmo devuelve TRUE y un arbol de costo mínimo tal que cada vertice alcanzable desde "s" guarda su padre y el costo mínimo de llegar a él desde "s". Si hay un ciclo negativo, devuelve FALSE. 
 
 ```python
@@ -688,4 +688,46 @@ INITIALIZE-SINGLE-SOURCE(G, s)
     v.d = ∞
     d.π = NIL
   s.d = 0
+```
+
+### Single-Source (sin ciclos)
+Se ponemos la restricción de que el grafo dirigido con peso $G$ sea aciclico (DAG), podemos hacer un algoritmo de camino más corto con costo **$ϴ(V + E)$** usando topological sort (que tiene ese mismo costo). $\\$
+Al terminar el algoritmo produce el arbol de costo mínimo tal que cada vertice guarda el costo mínimo del camino hasta el source y su padre.
+
+```python
+DAG-SHORTEST-PATHS(G, w, s)
+  topological_sort(G)
+  INITIALIZE-SINGLE-SOURCE(G, s)
+
+  for each vertex u ∈ G.V, taken in topological sort:
+    for each vertex v in G.ady[u]:
+      RELAX(u, v, w)
+```
+
+### Algoritmo de Dijkstra, Single-Source  (sin pesos negativos)
+El algoritmo mantiene un conjunto $S$ de los vertices que ya tienen el camino más corto hacia $s$ calculado. Iterativamente toma el vertice $u ∈ V-S$ con el mínimo camino más corto estimado hasta el momento. Se agrega $u$ a $S$ y se relajan todas las aristas que salen de $u. \\$
+El algoritmo de Dijkstra ejecutado sobre un grafo G con aristas no negativas y source $s$ produce un subgrafo de predecesores $G_{π}$ que es un arbol de caminos más cortos enraizado en $s$. 
+
+- **Complejidad**: Depende de la implementación del min-heap. 
+  - Si es un arreglo (aprovechando que los vertices se numeran de 1 a $|V|$-1) donde en cada posición se guarda el $v.d$, Insert y Decrease-key cuestan $O(1)$ y Extract-Min $O(V)$. Se hacen $O(V)$ Extract-Min y $O(E)$ Inserts y Decrease-keys. Queda $\bf{O(V^2 + E) = O(V^2)}$
+  - Podemos usar un binary-heap. Extract-Min con costo $O(lgV)$ y se hace |V| veces; construir el heap cuesta $O(V)$ (heapify); Decrease-key tiene costo $O(lgV)$ y se hace |E| veces. Queda un costo de $\bfO{((V+E)\ lgV)}$ que en general (para grafos con más aristas que vértices) queda $\bf{O(E\ lgV)}$. Si se cumple que E = $o(V^2 / lgV)$ entonces éste es una implementación mejor. 
+  - Con un fibonacci heap queda $\bf{O(VlgV+E)}$
+
+```python
+DIJKSTRA(G, w, s)
+  INITIALIZE-SINGLE-SOURCE(G, s)
+  S = Ø
+  Q = Ø # min-heap
+
+  for each vertex u ∈ G.V
+    Insert(Q, u)
+
+  while Q ≠ Ø
+    u = Extract-Min(Q)
+    S = Union(S, {u})
+    for each vertex v in G.adj[u]
+      RELAX(u, v, w)
+      if relax decreased v.d
+        Decrease-Key(Q, v, v.d)
+
 ```
