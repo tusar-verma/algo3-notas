@@ -248,7 +248,8 @@ $\sum_{\text{w hijo de v}}{cubren(w)}$ $- backEdgesQueTerminanEn(v) + backEdgesQ
 vector<int> memo(n, -1);
 int NO_LO_VI = 0, EMPECE_A_VER = 1, TERMINE_DE_VER = 2;
 vector<int> estado(n, NO_LO_VI);
-vector<vector<int>> tree_edges(n), backEdgesQueTerminanEn(n), backEdgesQueEmpiezanEn(n);
+vector<vector<int>> tree_edges(n);
+vector<int> back_edges_con_extremo_inferior_en(n), back_edges_con_extremo_superior_en(n);
 
 void dfs_puentes(int v, int p = -1) {
   estado[v] = EMPECE_A_VER;
@@ -257,8 +258,10 @@ void dfs_puentes(int v, int p = -1) {
       tree_edges[v].push_back(u);
       dfs_puentes(u, v);
     } else if (u != p) {
-      backEdgesQueEmpiezanEn[v]++;
-      backEdgesQueTerminanEn[u]++;
+      if (estado[u] == EMPEZE_A_VER)      
+        back_edges_con_extremo_inferior_en[v]++;
+      else  // estado[u] == TERMINE_DE_VER
+        back_edges_con_extremo_superior_en[v]++;
     }
   }
   estado[v] = TERMINE_DE_VER;
@@ -274,8 +277,8 @@ int cubren(int v, int p = -1) {
     }
   }
 
-  res -= backEdgesQueTerminanEn[v];
-  res += backEdgesQueEmpiezanEn[v];
+  res -= back_edges_con_extremo_superior_en[v];
+  res += back_edges_con_extremo_inferior_en[v];
   memo[v] = res;
   return res;
 }
@@ -691,7 +694,7 @@ INITIALIZE-SINGLE-SOURCE(G, s)
 ```
 
 ### Single-Source (sin ciclos)
-Se ponemos la restricción de que el grafo dirigido con peso $G$ sea aciclico (DAG), podemos hacer un algoritmo de camino más corto con costo **$ϴ(V + E)$** usando topological sort (que tiene ese mismo costo). $\\$
+Si ponemos la restricción de que el grafo dirigido con peso $G$ sea aciclico (DAG), podemos hacer un algoritmo de camino más corto con costo **$ϴ(V + E)$** usando topological sort (que tiene ese mismo costo). $\\$
 Al terminar el algoritmo produce el arbol de costo mínimo tal que cada vertice guarda el costo mínimo del camino hasta el source y su padre.
 
 ```python
@@ -710,7 +713,7 @@ El algoritmo de Dijkstra ejecutado sobre un grafo G con aristas no negativas y s
 
 - **Complejidad**: Depende de la implementación del min-heap. 
   - Si es un arreglo (aprovechando que los vertices se numeran de 1 a $|V|$-1) donde en cada posición se guarda el $v.d$, Insert y Decrease-key cuestan $O(1)$ y Extract-Min $O(V)$. Se hacen $O(V)$ Extract-Min y $O(E)$ Inserts y Decrease-keys. Queda $\bf{O(V^2 + E) = O(V^2)}$
-  - Podemos usar un binary-heap. Extract-Min con costo $O(lgV)$ y se hace |V| veces; construir el heap cuesta $O(V)$ (heapify); Decrease-key tiene costo $O(lgV)$ y se hace |E| veces. Queda un costo de $\bfO{((V+E)\ lgV)}$ que en general (para grafos con más aristas que vértices) queda $\bf{O(E\ lgV)}$. Si se cumple que E = $o(V^2 / lgV)$ entonces éste es una implementación mejor. 
+  - Podemos usar un binary-heap. Extract-Min con costo $O(lgV)$ y se hace |V| veces; construir el heap cuesta $O(V)$ (heapify); Decrease-key tiene costo $O(lgV)$ y se hace |E| veces. Queda un costo de $\bf O{((V+E)\ lgV)}$ que en general (para grafos con más aristas que vértices) queda $\bf{O(E\ lgV)}$. Si se cumple que E = $o(V^2 / lgV)$ entonces éste es una implementación mejor. 
   - Con un fibonacci heap queda $\bf{O(VlgV+E)}$
 
 ```python
@@ -731,3 +734,37 @@ DIJKSTRA(G, w, s)
         Decrease-Key(Q, v, v.d)
 
 ```
+
+### Algoritmo de Floyd-Warshall para todos a todos (sin ciclos negativos)
+Se basa en la representación de grafos con matriz de adyacencia.
+
+![](img/floyd-warshall.png){width=70%}
+
+- W: la matriz de costos
+- $D^{0}$: la matriz de costos mínimos para los caminos con ningun vertice intermedio.
+- $D^{k}$: la matriz de costos mínimos para los caminos con {1,2,...,k} vertices intermedios.
+- $d_{ij}^{k}$: representa el costo del camino mínimo de i a j con los {1,2,...,k} vertices como intermedios.
+- $n$: la cantidad de vertices
+- **Complejidad**: $θ(V^3)$
+
+**Idea del algoritmo**: Se numeran los vertices del grafo como {1,2,...,n}. En cada paso $k$ se busca el costo del camino mínimo que usa de intermedios a los vertices del subconunto {1,2,..,k} de vertices. Con k = 0 corresponde a los caminos sin vertices intermedios, entonces solo tenemos los costos de las aristas que conectan directamente a i con j (es decir, los pesos de las aristas).
+
+Luego para k > 0 vemos el mínimo costo de los caminos de i a j tal que se usen los vertices {1,...,k} en dichos caminos. Puede pasar que k pertenesca al camino mínimo mejor que el computado hasta ahora sin k (con los vertices intermedios de {1,...,k-1}), por lo que el costo del camino mínimo desde i a k más el de k a j (ambos subcaminos no usan a k) es menor que el camíno mínimo computado de i a j sin usar k de intermedio.
+
+En sintesis la semantica de la recursión es: $\bf d^{k}_{ij}$ el minimo costo del camino de i a j usando los vertices {1,..,k} es el mínimo entre $\bf d^{k-1}_{ij}$ el mínimo costo del camino de i a j con los vertices {1,...,k-1} de intermedios (sin usar a k), y $\bf d^{k-1}_{ik} + d^{k-1}_{kj}$ el mínimo costo del camino de i a j usando de intermedio a los vertices {1,...,k-1} y tambien a k (para calcular esto, vemos el minimo camino desde i a k y desde k a j usando los vertices {1,...,k-1}).
+
+#### Agregando la matriz de predecesores
+
+Se define la matriz de predecesores $∏$ como aquella con elementos $π_{ij}$ que contienen el predecesor de j para el camino mínimo de i a j. Si i = j o no hay camino posible, $π_{ij}$ = NIL. $\\$
+Es decir, para recuperar el camíno mínimo desde i hacia j hay que iterar sobre los antecesores de j empezando por $π_{ij}$ hasta llegar a $π_{ii}$ = NIL.
+
+Se puede ir computando la matriz de predecesores $∏^{0}, ∏^{1},..., ∏^{k}$ para los disintos k pasos del algoritmo de floyd. (k = n es el resultado del problema). Formulación recursiva para cada paso de k:
+
+**Para k = 0**:
+
+![](img/predecesor_floyd_0.png){width=60%} 
+
+**Para k > 0**:
+
+![](img/predecesor_floyd_k.png){width=60%} 
+Si el camino usando k de intermedio es mejor, entonces hay que usar el predecesor dado por el camino de k a j.
