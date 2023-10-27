@@ -55,6 +55,32 @@ Definimos el **aumento** de flujo de $f$ por $f'$ como:
 ![](img/lema24_2.png){width=75%}
 
 Luego con el lema 24.1, podemos aumentar el flujo de G.
+
 ![](img/colorario_24_3.png){width=75%}
 
 ### Cortes en grafo de flujos
+
+- **Corte (S, T)**: Partición de $V$ en $S$ y $T$ (son disjuntos y su unión da V), tal que $s ∈ S$ y $t ∈ T$.
+- **Flujo neto del corte**: Si $f$ es el flujo de $G = (V, E)$, entonces el flujo neto se define como:
+  
+  $\bf{f(S, T) = \sum_{u∈S}\sum_{v∈T} f(u,v) - \sum_{u∈S}\sum_{v∈T} f(v, u)}$. 
+  
+  (La suma del flujo que va desde S hacia T menos las que van de T hacia S).
+- **Capacidad del corte**: $\bf{c(S,T) = \sum_{u∈S}\sum_{v∈T} c(u,v)}$.
+- Un **corte mínimo** es aquel cuya capacidad es mínima entre todos los cortes posibles.
+  
+![](img/lema_24_4.png){width=75%}
+
+- **Colorario 24.5**: El valor de cualquier flujo $f$ en $G$ está acotado por arriba por la capacidad de cualquier corte. En consecuencia, el valor del máximo flow está acotado por la capacidad del mínimo corte.
+
+- **Teorema Max-flow Min-cut**: Sea $f$ un flujo en el grafo de flujo $G = (V, E)$ con source $s$ y sink $t$, las siguientes condiciones son equivalentes (una implica la otra):
+    - $f$ es el flujo máximo de $G$.
+    - El grafo residual $G_{f}$ no tiene ningun camino de aumento (de $s$ a $t$).
+    - $|f| = c(S,T)$ para algún corte $(S,T)$ de $G$.  
+
+### Algoritmo de Ford-Fulkerson
+- Se empieza con un flujo 0 para todas las aristas.
+- Se asume que para las aristas que no perteneces al grafo, tanto la capacidad y el flujo son 0 siempre.
+- Iterativamente se busca un camino de aumento en el grafo residual y se calcula la capacidad residual del camino encontrado. Luego se actualizan los valores de las aristas tanto en el grafo original como en el residual. Termina cuando ya no hay caminos posibles de $s$ a $t$ en el grafo residual.
+  
+![](img/ford-fulkerson-alg.png){width=75%}
