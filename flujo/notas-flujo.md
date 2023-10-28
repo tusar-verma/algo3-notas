@@ -82,5 +82,17 @@ Luego con el lema 24.1, podemos aumentar el flujo de G.
 - Se empieza con un flujo 0 para todas las aristas.
 - Se asume que para las aristas que no perteneces al grafo, tanto la capacidad y el flujo son 0 siempre.
 - Iterativamente se busca un camino de aumento en el grafo residual y se calcula la capacidad residual del camino encontrado. Luego se actualizan los valores de las aristas tanto en el grafo original como en el residual. Termina cuando ya no hay caminos posibles de $s$ a $t$ en el grafo residual.
+- **Complejidad**: $O(m* F)$ ya que en el peor caso en cada iteración se aumenta en 1 el flujo.
   
 ![](img/ford-fulkerson-alg.png){width=75%}
+
+### Algoritmo de Edmonds-Karp
+Consiste en el método de Ford-Fulkerson en el que se usa BSF para encontrar el camino de aumento. El algoritmo corre en tiempo polinomial y podemos acotarlo sin depender del valor del flujo.
+
+![](img/lema24_7.png){width=75%}
+
+![](img/edmonds-karp.png){width=75%}
+
+Sigue que como el costo de cada iteración del algoritmo de ford-fulkenson cuesta $O(m)$ y hacemos $O(nm)$ iteraciones, la **complejidad** del algoritmo queda $O(nm^2)$
+
+![](img/Teorema_24_10.png){width=75%}
