@@ -61,7 +61,7 @@ Luego con el lema 24.1, podemos aumentar el flujo de G.
 ### Cortes en grafo de flujos
 
 - **Corte (S, T)**: Partición de $V$ en $S$ y $T$ (son disjuntos y su unión da V), tal que $s ∈ S$ y $t ∈ T$.
-- **Flujo neto del corte**: Si $f$ es el flujo de $G = (V, E)$, entonces el flujo neto se define como:
+- **Flujo neto del corte**: Si $f$ es el flujo de $G = (V, E)$, entonces el flujo neto del corte se define como:
   
   $\bf{f(S, T) = \sum_{u∈S}\sum_{v∈T} f(u,v) - \sum_{u∈S}\sum_{v∈T} f(v, u)}$. 
   
@@ -85,6 +85,9 @@ Luego con el lema 24.1, podemos aumentar el flujo de G.
 - **Complejidad**: $O(m* F)$ ya que en el peor caso en cada iteración se aumenta en 1 el flujo.
   
 ![](img/ford-fulkerson-alg.png){width=75%}
+
+- **Teorema**: Si las capacidades de los arcos de la red son enteras, entonces el problema de flujo máximo tiene un flujo máximo entero.
+- Si las capacidades o el flujo inicial son n´umeros irracionales, el método de Ford y Fulkerson puede no parar (es decir, realizar un número infinito de pasos).
 
 ### Algoritmo de Edmonds-Karp
 Consiste en el método de Ford-Fulkerson en el que se usa BSF para encontrar el camino de aumento. El algoritmo corre en tiempo polinomial y podemos acotarlo sin depender del valor del flujo.
