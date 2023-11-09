@@ -42,7 +42,7 @@
 - **Distancia** entre 2 nodos: el camino mas corto d(u,v). Si no existe es $∞$. La distancia de un vertice con si mismo es 0.
 - **camino**: un recorrido sin nodos repetidos (tambien se llama camino simple cuando se refiere al recorrido como camino)
 - **circuito**: un recorrido que empieza y termina en el mismo nodo
-- **ciclo**: un circuito que no repite nodos (se puede decir ciclo al circuito y circuito simple al circuito)
+- **ciclo**: un circuito que no repite nodos (tambien llamado circuito simple)
 - No es valido un ciclo de longitud 2
 - **puente**: es una arista que al quitarla aumenta la cantidad de componentes conexas del grafo
 
